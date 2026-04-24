@@ -1,0 +1,466 @@
+/* ================================================================
+   Property Panel — Styles
+   ================================================================ */
+
+.property-panel {
+  width: 320px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  transition: background var(--transition-slow), border-color var(--transition-slow);
+}
+
+/* ── Panel Header ──────────────────────────────────────────────── */
+
+.panel-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-header-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.panel-header-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.panel-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panel-header-type {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.panel-delete-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.panel-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--status-error);
+}
+
+.panel-delete-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Panel Body / Form ─────────────────────────────────────────── */
+
+.panel-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.form-textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9db5' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+/* ── Toggle / Checkbox ─────────────────────────────────────────── */
+
+.form-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.form-toggle-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--bg-active);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle-switch.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform var(--transition-fast);
+}
+
+.toggle-switch.active::after {
+  transform: translateX(18px);
+}
+
+/* ── Key-Value Editor ──────────────────────────────────────────── */
+
+.kv-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kv-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.kv-row .form-input {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.kv-remove-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.kv-remove-btn:hover {
+  color: var(--status-error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.kv-remove-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.kv-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-hover);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+}
+
+.kv-add-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+}
+
+.kv-add-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── Empty State ───────────────────────────────────────────────── */
+
+.panel-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.panel-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+.panel-empty-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.panel-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.panel-empty-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 200px;
+}
+
+/* ── Simulation Results ────────────────────────────────────────── */
+
+.sim-section {
+  border-top: 1px solid var(--border-default);
+  margin-top: 8px;
+  padding-top: 14px;
+}
+
+.sim-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+
+.sim-step {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  position: relative;
+}
+
+.sim-step::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 24px;
+  bottom: -8px;
+  width: 1px;
+  background: var(--border-default);
+}
+
+.sim-step:last-child::before {
+  display: none;
+}
+
+.sim-step-dot {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sim-step-dot.completed {
+  background: var(--status-success);
+  color: white;
+}
+
+.sim-step-dot.running {
+  background: var(--status-running);
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sim-step-dot.error {
+  background: var(--status-error);
+  color: white;
+}
+
+.sim-step-dot svg {
+  width: 10px;
+  height: 10px;
+}
+
+.sim-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sim-step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.sim-step-msg {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* ── Errors ────────────────────────────────────────────────────── */
+
+.sim-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sim-error {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.sim-error svg {
+  width: 14px;
+  height: 14px;
+  color: var(--status-error);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sim-error-text {
+  font-size: 11px;
+  color: var(--status-error);
+  line-height: 1.4;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────── */
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  text-align: center;
+}
+
+.panel-tab:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.panel-tab.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
