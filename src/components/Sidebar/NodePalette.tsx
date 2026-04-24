@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, ClipboardList, ShieldCheck, Zap, Square } from 'lucide-react';
+import { Play, ClipboardList, ShieldCheck, Zap, Mail, GitFork, Square } from 'lucide-react';
 import { NodeType } from '../../types/workflow';
 import './NodePalette.css';
 
@@ -31,6 +31,20 @@ const NODE_ITEMS = [
     description: 'System-triggered action',
     icon: Zap,
     className: 'automated',
+  },
+  {
+    type: NodeType.Email,
+    label: 'Email Node',
+    description: 'Send automated email',
+    icon: Mail,
+    className: 'email',
+  },
+  {
+    type: NodeType.Condition,
+    label: 'Condition Node',
+    description: 'Branching logic',
+    icon: GitFork,
+    className: 'condition',
   },
   {
     type: NodeType.End,

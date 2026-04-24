@@ -1,18 +1,18 @@
 import React, { memo, useState } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { Zap, Settings, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
-import type { AutomatedNodeData } from '../../types/workflow';
+import { GitFork, Settings2, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
+import type { ConditionNodeData } from '../../types/workflow';
 import useWorkflowStore from '../../store/workflowStore';
 import NodeMetrics from './NodeMetrics';
 import './nodes.css';
 
-const AutomatedNode: React.FC<NodeProps> = ({ data, id, selected }) => {
+const ConditionNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   const [showMenu, setShowMenu] = useState(false);
   const activeSimNodeId = useWorkflowStore((s) => s.activeSimNodeId);
   const deleteNode = useWorkflowStore((s) => s.deleteNode);
   const nodes = useWorkflowStore((s) => s.nodes);
   const addNode = useWorkflowStore((s) => s.addNode);
-  const nodeData = data as unknown as AutomatedNodeData;
+  const nodeData = data as unknown as ConditionNodeData;
   const isSimulating = activeSimNodeId === id;
 
   const handleDelete = () => {
@@ -35,17 +35,15 @@ const AutomatedNode: React.FC<NodeProps> = ({ data, id, selected }) => {
     setShowMenu(false);
   };
 
-  const paramCount = Object.keys(nodeData.actionParams || {}).length;
-
   return (
-    <div className={`workflow-node automated-node ${selected ? 'selected' : ''} ${isSimulating ? 'simulating' : ''}`}>
+    <div className={`workflow-node condition-node ${selected ? 'selected' : ''} ${isSimulating ? 'simulating' : ''}`}>
       {isSimulating && <div className="node-status-dot active" />}
       <div className="node-header">
         <div className="node-icon">
-          <Zap />
+          <GitFork />
         </div>
-        <span className="node-title">{nodeData.title || 'Automated Step'}</span>
-        <span className="node-type-label">Auto</span>
+        <span className="node-title">{nodeData.title || 'Condition'}</span>
+        <span className="node-type-label">Logic</span>
         <div style={{ position: 'relative' }}>
           <button className="node-menu-btn" title="Options" onClick={() => setShowMenu(!showMenu)}>
             <MoreHorizontal size={14} />
@@ -63,20 +61,16 @@ const AutomatedNode: React.FC<NodeProps> = ({ data, id, selected }) => {
         </div>
       </div>
       <div className="node-body">
-        {nodeData.actionId && (
+        {nodeData.conditionField ? (
           <div className="node-detail">
-            <Settings />
-            <span className="node-detail-value">{nodeData.actionId}</span>
+            <Settings2 />
+            <span className="node-detail-value">
+              {nodeData.conditionField} {nodeData.conditionOperator} {nodeData.conditionValue}
+            </span>
           </div>
-        )}
-        {paramCount > 0 && (
+        ) : (
           <div className="node-detail">
-            <span className="node-detail-value">{paramCount} parameter{paramCount !== 1 ? 's' : ''} configured</span>
-          </div>
-        )}
-        {!nodeData.actionId && (
-          <div className="node-detail">
-            <span className="node-detail-value" style={{ opacity: 0.5 }}>System automated action</span>
+            <span className="node-detail-value" style={{ opacity: 0.5 }}>Branching logic</span>
           </div>
         )}
       </div>
@@ -87,9 +81,10 @@ const AutomatedNode: React.FC<NodeProps> = ({ data, id, selected }) => {
         durationAvg={nodeData.metrics?.durationAvg}
       />
       <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} id="true" style={{ left: '30%' }} />
+      <Handle type="source" position={Position.Bottom} id="false" style={{ left: '70%' }} />
     </div>
   );
 };
 
-export default memo(AutomatedNode);
+export default memo(ConditionNode);

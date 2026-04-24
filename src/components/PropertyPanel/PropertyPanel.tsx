@@ -12,6 +12,11 @@ import {
   Loader,
   AlertTriangle,
   FlaskConical,
+  GitBranch,
+  BarChart2,
+  Search,
+  Mail,
+  GitFork,
 } from 'lucide-react';
 import useWorkflowStore from '../../store/workflowStore';
 import { NodeType } from '../../types/workflow';
@@ -19,7 +24,10 @@ import StartForm from './StartForm';
 import TaskForm from './TaskForm';
 import ApprovalForm from './ApprovalForm';
 import AutomatedForm from './AutomatedForm';
+import EmailForm from './EmailForm';
+import ConditionForm from './ConditionForm';
 import EndForm from './EndForm';
+import EdgeForm from './EdgeForm';
 import './PropertyPanel.css';
 
 const nodeConfig: Record<string, { icon: React.FC<any>; color: string; label: string }> = {
@@ -27,15 +35,20 @@ const nodeConfig: Record<string, { icon: React.FC<any>; color: string; label: st
   [NodeType.Task]: { icon: ClipboardList, color: 'var(--node-task-accent)', label: 'Task Node' },
   [NodeType.Approval]: { icon: ShieldCheck, color: 'var(--node-approval-accent)', label: 'Approval Node' },
   [NodeType.Automated]: { icon: Zap, color: 'var(--node-automated-accent)', label: 'Automated Step' },
+  [NodeType.Email]: { icon: Mail, color: 'var(--node-email-accent)', label: 'Email Node' },
+  [NodeType.Condition]: { icon: GitFork, color: 'var(--node-condition-accent)', label: 'Condition Node' },
   [NodeType.End]: { icon: Square, color: 'var(--node-end-accent)', label: 'End Node' },
 };
 
 const PropertyPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'properties' | 'sandbox'>('properties');
+  const [activeTab, setActiveTab] = useState<'properties' | 'performance' | 'sandbox'>('properties');
 
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
+  const selectedEdgeId = useWorkflowStore((s) => s.selectedEdgeId);
   const nodes = useWorkflowStore((s) => s.nodes);
+  const edges = useWorkflowStore((s) => s.edges);
   const deleteNode = useWorkflowStore((s) => s.deleteNode);
+  const deleteEdge = useWorkflowStore((s) => s.deleteEdge);
   const simulationResult = useWorkflowStore((s) => s.simulationResult);
   const simulationRunning = useWorkflowStore((s) => s.simulationRunning);
 
@@ -43,6 +56,10 @@ const PropertyPanel: React.FC = () => {
   const config = selectedNode ? nodeConfig[selectedNode.type || ''] : null;
 
   const renderForm = () => {
+    if (selectedEdgeId) {
+      return <EdgeForm edgeId={selectedEdgeId} />;
+    }
+
     if (!selectedNode) return null;
 
     switch (selectedNode.type) {
@@ -54,11 +71,70 @@ const PropertyPanel: React.FC = () => {
         return <ApprovalForm nodeId={selectedNode.id} data={selectedNode.data as any} />;
       case NodeType.Automated:
         return <AutomatedForm nodeId={selectedNode.id} data={selectedNode.data as any} />;
+      case NodeType.Email:
+        return <EmailForm nodeId={selectedNode.id} data={selectedNode.data as any} />;
+      case NodeType.Condition:
+        return <ConditionForm nodeId={selectedNode.id} data={selectedNode.data as any} />;
       case NodeType.End:
         return <EndForm nodeId={selectedNode.id} data={selectedNode.data as any} />;
       default:
         return null;
     }
+  };
+
+  const renderPerformance = () => {
+    if (!selectedNode) {
+      return (
+        <div className="panel-body">
+          <div className="panel-empty">
+            <div className="panel-empty-icon">
+              <BarChart2 />
+            </div>
+            <div className="panel-empty-title">No Node Selected</div>
+            <div className="panel-empty-desc">
+              Select a node to view its performance metrics.
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const metrics = (selectedNode.data as any)?.metrics || { executions: 0, errors: 0, successes: 0, durationAvg: 0 };
+    const successRate = metrics.executions > 0 ? Math.round((metrics.successes / metrics.executions) * 100) : 0;
+
+    return (
+      <div className="panel-body" style={{ gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '4px' }}>Executions</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{metrics.executions}</div>
+          </div>
+          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '4px' }}>Success Rate</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--status-success)' }}>{successRate}%</div>
+          </div>
+          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '4px' }}>Errors</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--status-error)' }}>{metrics.errors}</div>
+          </div>
+          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '4px' }}>Avg Duration</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--status-info)' }}>{metrics.durationAvg}ms</div>
+          </div>
+        </div>
+
+        {metrics.executions > 0 && (
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px' }}>Status Distribution</div>
+            <div style={{ height: '6px', background: 'var(--border-default)', borderRadius: '3px', overflow: 'hidden', display: 'flex' }}>
+              <div style={{ width: `${successRate}%`, background: 'var(--status-success)' }}></div>
+              <div style={{ width: `${metrics.errors > 0 ? (metrics.errors / metrics.executions) * 100 : 0}%`, background: 'var(--status-error)' }}></div>
+              <div style={{ flex: 1, background: 'var(--border-default)' }}></div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderSimulation = () => {
@@ -145,7 +221,15 @@ const PropertyPanel: React.FC = () => {
           id="tab-properties"
         >
           <Settings size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-          Properties
+          Props
+        </button>
+        <button
+          className={`panel-tab ${activeTab === 'performance' ? 'active' : ''}`}
+          onClick={() => setActiveTab('performance')}
+          id="tab-performance"
+        >
+          <BarChart2 size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+          Perform
         </button>
         <button
           className={`panel-tab ${activeTab === 'sandbox' ? 'active' : ''}`}
@@ -158,7 +242,29 @@ const PropertyPanel: React.FC = () => {
       </div>
 
       {activeTab === 'properties' ? (
-        selectedNode && config ? (
+        selectedEdgeId ? (
+          <>
+            <div className="panel-header">
+              <div className="panel-header-left">
+                <div className="panel-header-icon" style={{ background: 'var(--status-info)' }}>
+                  <GitBranch />
+                </div>
+                <div>
+                  <div className="panel-header-title">Connection Arc</div>
+                  <div className="panel-header-type">Edge properties</div>
+                </div>
+              </div>
+              <button
+                className="panel-delete-btn"
+                onClick={() => deleteEdge(selectedEdgeId)}
+                title="Delete arc"
+              >
+                <Trash2 />
+              </button>
+            </div>
+            {renderForm()}
+          </>
+        ) : selectedNode && config ? (
           <>
             <div className="panel-header">
               <div className="panel-header-left">
@@ -188,10 +294,12 @@ const PropertyPanel: React.FC = () => {
             </div>
             <div className="panel-empty-title">No Selection</div>
             <div className="panel-empty-desc">
-              Click on a node in the canvas to view and edit its properties.
+              Click on a node or arc in the canvas to view and edit its properties.
             </div>
           </div>
         )
+      ) : activeTab === 'performance' ? (
+        renderPerformance()
       ) : (
         renderSimulation()
       )}

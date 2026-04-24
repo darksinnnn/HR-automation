@@ -2,10 +2,18 @@ import type { Node, Edge } from '@xyflow/react';
 
 // ── Node Data Types ──────────────────────────────────────────────
 
+export interface NodeMetricsData {
+  executions: number;
+  errors: number;
+  successes: number;
+  durationAvg: number;
+}
+
 export interface StartNodeData {
   label: string;
   title: string;
   metadata: Record<string, string>;
+  metrics?: NodeMetricsData;
   [key: string]: unknown;
 }
 
@@ -16,6 +24,7 @@ export interface TaskNodeData {
   assignee: string;
   dueDate: string;
   customFields: Record<string, string>;
+  metrics?: NodeMetricsData;
   [key: string]: unknown;
 }
 
@@ -24,6 +33,7 @@ export interface ApprovalNodeData {
   title: string;
   approverRole: string;
   autoApproveThreshold: number;
+  metrics?: NodeMetricsData;
   [key: string]: unknown;
 }
 
@@ -32,6 +42,27 @@ export interface AutomatedNodeData {
   title: string;
   actionId: string;
   actionParams: Record<string, string>;
+  metrics?: NodeMetricsData;
+  [key: string]: unknown;
+}
+
+export interface EmailNodeData {
+  label: string;
+  title: string;
+  to: string;
+  subject: string;
+  body: string;
+  metrics?: NodeMetricsData;
+  [key: string]: unknown;
+}
+
+export interface ConditionNodeData {
+  label: string;
+  title: string;
+  conditionField: string;
+  conditionOperator: string;
+  conditionValue: string;
+  metrics?: NodeMetricsData;
   [key: string]: unknown;
 }
 
@@ -39,6 +70,7 @@ export interface EndNodeData {
   label: string;
   endMessage: string;
   summaryFlag: boolean;
+  metrics?: NodeMetricsData;
   [key: string]: unknown;
 }
 
@@ -47,6 +79,8 @@ export type WorkflowNodeData =
   | TaskNodeData
   | ApprovalNodeData
   | AutomatedNodeData
+  | EmailNodeData
+  | ConditionNodeData
   | EndNodeData;
 
 export type WorkflowNode = Node<WorkflowNodeData>;
@@ -59,6 +93,8 @@ export enum NodeType {
   Task = 'taskNode',
   Approval = 'approvalNode',
   Automated = 'automatedNode',
+  Email = 'emailNode',
+  Condition = 'conditionNode',
   End = 'endNode',
 }
 

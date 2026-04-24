@@ -11,6 +11,7 @@
   transition: all var(--transition-normal);
   position: relative;
   overflow: visible;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .workflow-node::before {
@@ -24,12 +25,17 @@
   pointer-events: none;
 }
 
+.workflow-node:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
 .workflow-node:hover::before {
   opacity: 1;
 }
 
 .workflow-node.selected {
   transform: scale(1.02);
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-primary);
 }
 
 .workflow-node.simulating {
@@ -42,23 +48,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
 }
 
 .node-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .node-icon svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 .node-title {
@@ -74,21 +82,22 @@
 
 .node-type-label {
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 2px 6px;
+  letter-spacing: 0.8px;
+  padding: 3px 7px;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  opacity: 0.8;
 }
 
 /* ── Node Body ─────────────────────────────────────────────────── */
 
 .node-body {
-  padding: 10px 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .node-detail {
@@ -97,19 +106,54 @@
   gap: 6px;
   font-size: 11px;
   color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 .node-detail svg {
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .node-detail-value {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ── Node Actions / 3-dots Menu ────────────────────────────────── */
+
+.node-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+.node-menu-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* ── Pill Style (For Start/End Nodes) ──────────────────────────── */
+
+.workflow-node.pill-style {
+  border-radius: var(--radius-xl) !important;
+}
+
+.workflow-node.pill-style::before {
+  border-radius: calc(var(--radius-xl) + 2px) !important;
 }
 
 /* ── Node Status Indicators ────────────────────────────────────── */
@@ -200,24 +244,54 @@
 }
 
 /* ── Automated Node ────────────────────────────────────────────── */
-
-.automated-node {
-  background: var(--node-automated-bg);
+.workflow-node.automated-node {
   border-color: var(--node-automated-border);
 }
-
-.automated-node::before {
-  box-shadow: 0 0 24px var(--node-automated-glow), 0 0 48px var(--node-automated-glow);
+.workflow-node.automated-node.selected {
+  border-color: var(--node-automated-accent);
+  box-shadow: 0 0 0 1px var(--node-automated-accent), var(--shadow-glow);
 }
-
-.automated-node .node-icon {
+.workflow-node.automated-node .node-icon {
   background: var(--node-automated-accent);
-  color: white;
+  color: #fff;
+}
+.workflow-node.automated-node .node-type-label {
+  background: var(--node-automated-bg);
+  color: var(--node-automated-accent);
 }
 
-.automated-node .node-type-label {
-  background: rgba(168, 85, 247, 0.15);
-  color: var(--node-automated-accent);
+/* -- Email Node -- */
+.workflow-node.email-node {
+  border-color: var(--node-email-border, rgba(236, 72, 153, 0.5));
+}
+.workflow-node.email-node.selected {
+  border-color: var(--node-email-accent);
+  box-shadow: 0 0 0 1px var(--node-email-accent), var(--shadow-glow);
+}
+.workflow-node.email-node .node-icon {
+  background: var(--node-email-accent);
+  color: #fff;
+}
+.workflow-node.email-node .node-type-label {
+  background: var(--node-email-bg);
+  color: var(--node-email-accent);
+}
+
+/* -- Condition Node -- */
+.workflow-node.condition-node {
+  border-color: var(--node-condition-border, rgba(6, 182, 212, 0.5));
+}
+.workflow-node.condition-node.selected {
+  border-color: var(--node-condition-accent);
+  box-shadow: 0 0 0 1px var(--node-condition-accent), var(--shadow-glow);
+}
+.workflow-node.condition-node .node-icon {
+  background: var(--node-condition-accent);
+  color: #fff;
+}
+.workflow-node.condition-node .node-type-label {
+  background: var(--node-condition-bg);
+  color: var(--node-condition-accent);
 }
 
 /* ── End Node ──────────────────────────────────────────────────── */
@@ -239,4 +313,122 @@
 .end-node .node-type-label {
   background: rgba(239, 68, 68, 0.15);
   color: var(--node-end-accent);
+}
+
+/* ── Node Metrics Badges ───────────────────────────────────────── */
+
+.node-metrics {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-top: 1px dashed var(--border-subtle);
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0) 100%);
+}
+
+.node-metric-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  background: var(--bg-primary);
+  transition: all var(--transition-fast);
+}
+
+.node-metric-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.node-metric-badge svg {
+  width: 10px;
+  height: 10px;
+}
+
+.metric-neutral {
+  color: var(--text-secondary);
+  border-color: var(--text-tertiary);
+}
+
+.metric-neutral svg { color: var(--text-tertiary); }
+
+.metric-success {
+  color: var(--status-success);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.metric-error {
+  color: var(--status-error);
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.metric-info {
+  color: var(--status-info);
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.metric-purple {
+  color: #a855f7;
+  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.08);
+}
+
+
+/* ── Node Menu Dropdown ────────────────────────────────────────── */
+
+.node-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  min-width: 140px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.node-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.node-menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.node-menu-item.danger {
+  color: var(--status-error);
+}
+
+.node-menu-item.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.node-menu-item svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }

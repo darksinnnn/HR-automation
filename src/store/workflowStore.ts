@@ -38,6 +38,7 @@ interface WorkflowState {
   onConnect: OnConnect;
   addNode: (node: Node) => void;
   updateNodeData: (nodeId: string, data: Partial<any>) => void;
+  updateNodeMetrics: (nodeId: string, metricsDiff: Partial<any>) => void;
   updateEdgeData: (edgeId: string, label: string) => void;
   setSelectedNodeId: (id: string | null) => void;
   setSelectedEdgeId: (id: string | null) => void;
@@ -157,6 +158,30 @@ const useWorkflowStore = create<WorkflowState>((set, get) => ({
       nodes: get().nodes.map((n) =>
         n.id === nodeId ? { ...n, data: { ...n.data, ...data } } : n
       ),
+    });
+  },
+
+  updateNodeMetrics: (nodeId: string, metricsDiff: Partial<any>) => {
+    set({
+      nodes: get().nodes.map((n) => {
+        if (n.id !== nodeId) return n;
+        const currentMetrics = (n.data as any).metrics || { executions: 0, errors: 0, successes: 0, durationAvg: 0 };
+        const newMetrics = { ...currentMetrics };
+        
+        // Accumulate metrics properly
+        if (metricsDiff.executions) newMetrics.executions = (newMetrics.executions || 0) + metricsDiff.executions;
+        if (metricsDiff.errors) newMetrics.errors = (newMetrics.errors || 0) + metricsDiff.errors;
+        if (metricsDiff.successes) newMetrics.successes = (newMetrics.successes || 0) + metricsDiff.successes;
+        if (metricsDiff.durationAvg) newMetrics.durationAvg = metricsDiff.durationAvg; // Use latest duration
+        
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            metrics: newMetrics
+          }
+        };
+      }),
     });
   },
 

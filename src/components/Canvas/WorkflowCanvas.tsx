@@ -15,6 +15,8 @@ import StartNode from '../Nodes/StartNode';
 import TaskNode from '../Nodes/TaskNode';
 import ApprovalNode from '../Nodes/ApprovalNode';
 import AutomatedNode from '../Nodes/AutomatedNode';
+import EmailNode from '../Nodes/EmailNode';
+import ConditionNode from '../Nodes/ConditionNode';
 import EndNode from '../Nodes/EndNode';
 import { Workflow } from 'lucide-react';
 import './WorkflowCanvas.css';
@@ -24,6 +26,8 @@ const nodeTypes = {
   [NodeType.Task]: TaskNode,
   [NodeType.Approval]: ApprovalNode,
   [NodeType.Automated]: AutomatedNode,
+  [NodeType.Email]: EmailNode,
+  [NodeType.Condition]: ConditionNode,
   [NodeType.End]: EndNode,
 };
 
@@ -37,6 +41,10 @@ function getDefaultData(type: string) {
       return { label: 'Approval', title: '', approverRole: '', autoApproveThreshold: 0 };
     case NodeType.Automated:
       return { label: 'Automated', title: '', actionId: '', actionParams: {} };
+    case NodeType.Email:
+      return { label: 'Email', title: '', to: '', subject: '', body: '' };
+    case NodeType.Condition:
+      return { label: 'Condition', title: '', conditionField: '', conditionOperator: '===', conditionValue: '' };
     case NodeType.End:
       return { label: 'End', endMessage: '', summaryFlag: false };
     default:
@@ -55,21 +63,25 @@ const WorkflowCanvas: React.FC = () => {
   const onConnect = useWorkflowStore((s) => s.onConnect);
   const addNode = useWorkflowStore((s) => s.addNode);
   const setSelectedNodeId = useWorkflowStore((s) => s.setSelectedNodeId);
+  const setSelectedEdgeId = useWorkflowStore((s) => s.setSelectedEdgeId);
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
     reactFlowRef.current = instance;
   }, []);
 
-  const onNodeClick = useCallback(
-    (_: React.MouseEvent, node: any) => {
-      setSelectedNodeId(node.id);
+  const onSelectionChange = useCallback(
+    ({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
+      // Prioritize node selection over edge selection if both happen to be selected
+      if (nodes.length > 0) {
+        setSelectedNodeId(nodes[0].id);
+      } else if (edges.length > 0) {
+        setSelectedEdgeId(edges[0].id);
+      } else {
+        setSelectedNodeId(null);
+      }
     },
-    [setSelectedNodeId]
+    [setSelectedNodeId, setSelectedEdgeId]
   );
-
-  const onPaneClick = useCallback(() => {
-    setSelectedNodeId(null);
-  }, [setSelectedNodeId]);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -120,8 +132,7 @@ const WorkflowCanvas: React.FC = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onInit={onInit}
-        onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
+        onSelectionChange={onSelectionChange}
         onDragOver={onDragOver}
         onDrop={onDrop}
         nodeTypes={nodeTypes}

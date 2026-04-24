@@ -9,6 +9,8 @@ import {
   Upload,
   GitBranch,
   Box,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import useWorkflowStore from '../../store/workflowStore';
@@ -28,6 +30,11 @@ const Header: React.FC = () => {
   const simulationRunning = useWorkflowStore((s) => s.simulationRunning);
   const exportWorkflow = useWorkflowStore((s) => s.exportWorkflow);
   const importWorkflow = useWorkflowStore((s) => s.importWorkflow);
+  const undo = useWorkflowStore((s) => s.undo);
+  const redo = useWorkflowStore((s) => s.redo);
+  const past = useWorkflowStore((s) => s.past);
+  const future = useWorkflowStore((s) => s.future);
+  const updateNodeMetrics = useWorkflowStore((s) => s.updateNodeMetrics);
 
   const handleSimulate = async () => {
     if (simulationRunning || nodes.length === 0) return;
@@ -41,8 +48,22 @@ const Header: React.FC = () => {
 
     if (result.valid && result.steps.length > 0) {
       for (let i = 0; i < result.steps.length; i++) {
-        setActiveSimNodeId(result.steps[i].nodeId);
-        await new Promise((r) => setTimeout(r, 1200));
+        const step = result.steps[i];
+        setActiveSimNodeId(step.nodeId);
+        
+        // Update executions immediately
+        updateNodeMetrics(step.nodeId, { executions: 1 });
+
+        const startTime = Date.now();
+        await new Promise((r) => setTimeout(r, 1200)); // Simulate async work
+        const duration = Date.now() - startTime;
+
+        // Apply error or success based on the simulated step status
+        if (step.status === 'error') {
+          updateNodeMetrics(step.nodeId, { errors: 1, durationAvg: duration });
+        } else if (step.status === 'completed') {
+          updateNodeMetrics(step.nodeId, { successes: 1, durationAvg: duration });
+        }
       }
       setActiveSimNodeId(null);
     }
@@ -103,6 +124,27 @@ const Header: React.FC = () => {
       </div>
 
       <div className="header-center">
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            className="header-btn"
+            onClick={undo}
+            disabled={past.length === 0}
+            title="Undo"
+          >
+            <Undo2 size={14} />
+          </button>
+          <button
+            className="header-btn"
+            onClick={redo}
+            disabled={future.length === 0}
+            title="Redo"
+          >
+            <Redo2 size={14} />
+          </button>
+        </div>
+
+        <div className="header-divider" />
+
         <button
           className="header-btn primary"
           onClick={handleSimulate}

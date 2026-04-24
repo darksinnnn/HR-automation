@@ -11,6 +11,7 @@
   flex-shrink: 0;
   overflow-y: auto;
   transition: background var(--transition-slow), border-color var(--transition-slow);
+  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.05);
 }
 
 /* ── Panel Header ──────────────────────────────────────────────── */
@@ -122,11 +123,19 @@
   outline: none;
 }
 
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-active);
+}
+
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--bg-tertiary);
 }
 
 .form-input::placeholder,
@@ -436,15 +445,16 @@
   display: flex;
   border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
 }
 
 .panel-tab {
   flex: 1;
-  padding: 10px 12px;
+  padding: 12px 12px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: var(--text-tertiary);
   background: transparent;
   border: none;
@@ -463,4 +473,5 @@
 .panel-tab.active {
   color: var(--accent-primary);
   border-bottom-color: var(--accent-primary);
+  background: transparent;
 }

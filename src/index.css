@@ -77,6 +77,11 @@ body {
   --node-automated-accent: #a855f7;
   --node-automated-glow: rgba(168, 85, 247, 0.15);
 
+  --node-email-accent: #ec4899;
+  --node-email-bg: rgba(236, 72, 153, 0.1);
+  --node-condition-accent: #06b6d4;
+  --node-condition-bg: rgba(6, 182, 212, 0.1);
+
   --node-end-bg: rgba(239, 68, 68, 0.1);
   --node-end-border: rgba(239, 68, 68, 0.5);
   --node-end-accent: #ef4444;
